@@ -11,12 +11,6 @@ import (
 	_ "github.com/jung-kurt/gofpdf" // or use "github.com/hhrutter/pdfcpu"
 )
 
-/*
-type DigitYear struct {
-    Digit int
-    Year  int
-}*/
-
 type Orders struct {
    Orders []*Order
 }

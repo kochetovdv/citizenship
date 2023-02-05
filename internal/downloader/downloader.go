@@ -3,7 +3,6 @@ package downloader
 import (
 	"citizenship/internal/order"
 	"fmt"
-	_ "html/template"
 	"io"
 	"log"
 	"net/http"
@@ -45,6 +44,8 @@ func (d *Downloader) Download() []order.Order {
 
 	html := string(body)
 	lines := strings.Split(html, "\n")
+
+	//TODO Use model order.Orders in this block (new, add, etc)
 	var data []order.Order
 	for _, line := range lines {
 		tmpData, err := d.ExtractData(line)
@@ -55,13 +56,11 @@ func (d *Downloader) Download() []order.Order {
 		data = append(data, tmpData...)
 	}
 
-	//	fmt.Printf("%s", body)
-
 	for _, el := range data {
-		fmt.Printf("Date:%s\tFilename:%s\tLink:%s\tNumber:%s\n", el.Date, el.Filename, el.Link, el.Number)
+		log.Printf("Date:%s\tFilename:%s\tLink:%s\tNumber:%s\n", el.Date, el.Filename, el.Link, el.Number)
 	}
 
-// TODO Optimize for just new file checking
+	// TODO Optimize for just new file checking
 	for _, el := range data {
 		err := d.DownloadFile(el.Filename, el.Link)
 		if err != nil {
@@ -73,12 +72,12 @@ func (d *Downloader) Download() []order.Order {
 
 func (d *Downloader) ExtractData(htmlLine string) ([]order.Order, error) {
 	dateRegExp := regexp.MustCompile(`<strong>([^<]+)</strong>`)
-	tempDate := dateRegExp.FindStringSubmatch(htmlLine)
-	if len(tempDate) < 1 {
+	date := dateRegExp.FindString(htmlLine)
+	if date == "" {
 		return nil, fmt.Errorf("no date found in %s", htmlLine)
 	}
-	date := strings.Replace(tempDate[0], "<strong>", "", 1)
-	date = strings.Replace(date, "</strong>", "", 1)
+	//	date := strings.Replace(tempDate, "<strong>", "", 1)
+	//	date = strings.Replace(date, "</strong>", "", 1)
 	date = strings.TrimSpace(date)
 
 	linksRegExp := regexp.MustCompile(`<a href="([^"]+)">([^<]+)</a>`)
@@ -138,7 +137,7 @@ func (d *Downloader) DownloadFile(fileName, url string) error {
 		return err
 	}
 
-	fmt.Printf("File %s downloaded to %s\n", fileName, filePath)
+	log.Printf("File %s downloaded to %s\n", fileName, filePath)
 	return nil
 }
 
