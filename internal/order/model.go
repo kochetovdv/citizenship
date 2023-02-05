@@ -11,12 +11,34 @@ import (
 	_ "github.com/jung-kurt/gofpdf" // or use "github.com/hhrutter/pdfcpu"
 )
 
+/*
 type DigitYear struct {
     Digit int
     Year  int
+}*/
+
+type Orders struct {
+   Orders []*Order
 }
 
-func main() {
+func NewOrders() *Orders {
+    return &Orders{
+        []*Order{},
+    }
+}
+
+func (o *Orders) Add(order *Order) {
+    o.Orders = append(o.Orders, order)
+}
+
+type Order struct {
+	Date     string
+	Filename string
+	Link     string
+	Number   string
+}
+
+func Main() {
     // Open the PDF file
  /*   pdf, err := gofpdf.Open("input.pdf")
     if err != nil {

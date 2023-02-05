@@ -1,35 +1,37 @@
 package app
 
-import(
+import (
 	"citizenship/internal/downloader"
+	"citizenship/internal/order"
 )
 
-type Downloader interface {
-	Download(url string)
+type expDownloader interface {
+	Download() []order.Order
 }
 
-type Parser interface {
+type expParser interface {
 	Parse(pdf string)
 }
 
-type app struct {
-//	logger Logger
-//	ctx    Context
-	downloader Downloader
-	_ Parser
+type App struct {
+	//	logger Logger
+	//	ctx    Context
+	downloader expDownloader
+	_          expParser
 }
 
 // func NewApp(logger Logger, ctx Context) *app {
-func NewApp() *app {
-/*	a := new(app)
-	a.ctx = ctx
-	a.logger = logger
-	return a*/
-	a:=new(app)
-	a.downloader=downloader.NewDownloader()
+func NewApp() *App {
+	/*	a := new(app)
+		a.ctx = ctx
+		a.logger = logger
+		return a*/
+	a := new(App)
+	a.downloader = downloader.NewDownloader("http://cetatenie.just.ro/ordine-articolul-11/", "./downloads")
+
 	return a
 }
 
-func (a *app) Run() {
-	a.downloader.Download("http://cetatenie.just.ro/ordine-articolul-11/")
+func (a *App) Run() {
+	a.downloader.Download()
 }
