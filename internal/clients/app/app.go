@@ -3,6 +3,7 @@ package app
 import (
 	"citizenship/internal/downloader"
 	"citizenship/internal/order"
+	"citizenship/internal/parser"
 )
 
 type expDownloader interface {
@@ -17,7 +18,7 @@ type App struct {
 	//	logger Logger
 	//	ctx    Context
 	downloader expDownloader
-	_          expParser
+	parser     expParser
 }
 
 // func NewApp(logger Logger, ctx Context) *app {
@@ -29,9 +30,13 @@ func NewApp() *App {
 	a := new(App)
 	a.downloader = downloader.NewDownloader("http://cetatenie.just.ro/ordine-articolul-11/", "./downloads")
 
+	//TODO
+	a.parser = parser.NewParser("", "")
+
 	return a
 }
 
 func (a *App) Run() {
-	a.downloader.Download()
+	//	a.downloader.Download()
+	a.parser.Parse("")
 }

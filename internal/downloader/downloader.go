@@ -24,6 +24,7 @@ func NewDownloader(url, path string) *Downloader {
 	return d
 }
 
+//TODO add error handling, change return data type to Orders.
 func (d *Downloader) Download() []order.Order {
 	log.Printf("Downloading %s", d.url)
 
@@ -76,8 +77,6 @@ func (d *Downloader) ExtractData(htmlLine string) ([]order.Order, error) {
 	if date == "" {
 		return nil, fmt.Errorf("no date found in %s", htmlLine)
 	}
-	//	date := strings.Replace(tempDate, "<strong>", "", 1)
-	//	date = strings.Replace(date, "</strong>", "", 1)
 	date = strings.TrimSpace(date)
 
 	linksRegExp := regexp.MustCompile(`<a href="([^"]+)">([^<]+)</a>`)
@@ -140,29 +139,6 @@ func (d *Downloader) DownloadFile(fileName, url string) error {
 	log.Printf("File %s downloaded to %s\n", fileName, filePath)
 	return nil
 }
-
-/*
-   	tmpl, err := template.New("data").Parse(`
-   	{{range .}}
-   	<li>Data de <strong>{{.Date}}</strong> numărul: <a href="{{.Link}}">{{.CaseNumber}}</a></li>
-   	{{end}}
-     `)
-     if err != nil {
-   	  // handle error
-     }
-
-
-     data := []Data{
-   	  {Date: "23.12.2022", CaseNumber: "1440P", Link: "http://cetatenie.just.ro/wp-content/uploads/2022/01/Ordin-1440P-23-12-2022-NPE.pdf"},
-   	  // add more data here
-     }
-
-
-     err = tmpl.Execute(os.Stdout, data)
-     if err != nil {
-   	  // handle error
-     }
-*/
 
 /*
 Есть статичная страница HTML, на которой имеются li элементы следующего вида:
