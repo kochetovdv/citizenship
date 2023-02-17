@@ -1,4 +1,4 @@
-package parser
+package pdfparser
 
 import (
 	"fmt"
@@ -6,25 +6,26 @@ import (
 	"regexp"
 	_ "strconv"
 	"strings"
-	_ "strings"
 
 	"github.com/ledongthuc/pdf"
+
+	//_ "github.com/jung-kurt/gofpdf" // or use "github.com/hhrutter/pdfcpu"
 )
 
-type Parser struct {
+type PDFParser struct {
 	path    string
 	filePDF string
 }
 
-func NewParser(path, filePDF string) *Parser {
-	p := new(Parser)
+func NewParser(path, filePDF string) *PDFParser {
+	p := new(PDFParser)
 	p.path = path
 	p.filePDF = filePDF
 	return p
 }
 
 // TODO add error handling, change return data type to Orders.
-func (p *Parser) Parse(fileName string) { //([]issue.Issue, error) {
+func (p *PDFParser) Parse(fileName string) { //([]issue.Issue, error) {
 	// Open the PDF file
 	//TODO
 	file, pdfReader, err := pdf.Open("downloads/O-15-din-07.01.2022-NPE.pdf")

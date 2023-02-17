@@ -1,8 +1,8 @@
-package downloader
+package siteparser
 
 import (
 	"citizenship/internal/order"
-	"fmt"
+	//"citizenship/pkg/regulars"
 	"io"
 	"log"
 	"net/http"
@@ -12,23 +12,45 @@ import (
 	"strings"
 )
 
-type Downloader struct {
+// SiteParser is an structure for downloading orders from a website
+type SiteParser struct {
 	path string
 	url  string
 }
 
-func NewDownloader(url, path string) *Downloader {
-	d := new(Downloader)
-	d.path = path
-	d.url = url
-	return d
+// NewSiteParser creates a new SiteParser
+func NewSiteParser(url, path string) *SiteParser {
+	s := new(SiteParser)
+	s.path = path
+	s.url = url
+	return s
 }
 
-//TODO add error handling, change return data type to Orders.
-func (d *Downloader) Download() []order.Order {
-	log.Printf("Downloading %s", d.url)
+// Site parsing
+func (s *SiteParser) Parse(url string) *order.Orders {
+	response, _ := s.connect()
+	listOfOrders := s.extractData(response)
 
-	resp, err := http.Get(d.url)
+	listOfOrders.Print()
+	listOfOrders.Statistics()
+	// TODO Optimize for just new file checking
+	for _, el := range listOfOrders.Orders {
+			err := s.DownloadFile(el.Filename, el.Link)
+			if err != nil {
+				log.Printf("Error with downloading: %s", err)
+			}
+		}
+		return listOfOrders 
+}
+
+// TODO add error handling, change return data type to Orders.
+// TODO Replace to pkg/web-services
+func (s *SiteParser) connect() ([]byte, error) {
+	// TODO after refactoring, change to use pkg/web-services
+	// response, err:= connect(s.url)
+	log.Printf("Connecting: %s", s.url)
+
+	resp, err := http.Get(s.url)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,20 +58,65 @@ func (d *Downloader) Download() []order.Order {
 
 	body, err := io.ReadAll(resp.Body)
 	resp.Body.Close()
+	// TODO add error handling, change return
 	if resp.StatusCode > 299 {
-		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", resp.StatusCode, body)
+		log.Printf("Response failed with status code: %d and\nbody: %s\n", resp.StatusCode, body)
 	}
+	// TODO add error handling, change return
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
+	return body, nil
+}
+
+func (d *SiteParser) extractData(body []byte) *order.Orders {
+	orders := order.NewOrders()
+
 	html := string(body)
-	lines := strings.Split(html, "\n")
+	htmlLines := strings.Split(html, "\n")
+	var htmlLi []string
+
+	for _, line := range htmlLines {
+		if strings.Contains(line, "<li>") {
+			htmlLi = append(htmlLi, line)
+		}
+	}
+
+	for _, line := range htmlLi {
+		dateRegExp := regexp.MustCompile(`<strong>([^<]+)</strong>`)
+
+		date := dateRegExp.FindString(line)
+		date = strings.Replace(date, "<strong>", "", -1)
+		date = strings.Replace(date, "</strong>", "", -1)
+
+		linksRegExp := regexp.MustCompile(`<a href="([^"]+)">([^<]+)</a>`)
+		links := linksRegExp.FindAllStringSubmatch(line, -1)
+
+		for _, link := range links {
+			filename := filepath.Base(link[1])
+			order := order.NewOrder(
+				date,
+				filename,
+				link[1],
+				link[2],
+			)
+			orders.Add(order)
+		}
+	}
+
+	return orders
+
+}
+
+/*
+// Create orders from links
+func (d *SiteParser) CreateOrders(links []string) ([]order.Order, error) {
 
 	//TODO Use model order.Orders in this block (new, add, etc)
 	var data []order.Order
 	for _, line := range lines {
-		tmpData, err := d.ExtractData(line)
+		tmpData, err := s.ExtractData(line)
 		if err != nil {
 			log.Print(err)
 			continue
@@ -61,45 +128,10 @@ func (d *Downloader) Download() []order.Order {
 		log.Printf("Date:%s\tFilename:%s\tLink:%s\tNumber:%s\n", el.Date, el.Filename, el.Link, el.Number)
 	}
 
-	// TODO Optimize for just new file checking
-	for _, el := range data {
-		err := d.DownloadFile(el.Filename, el.Link)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-	return data
-}
+}*/
 
-func (d *Downloader) ExtractData(htmlLine string) ([]order.Order, error) {
-	dateRegExp := regexp.MustCompile(`<strong>([^<]+)</strong>`)
-	date := dateRegExp.FindString(htmlLine)
-	if date == "" {
-		return nil, fmt.Errorf("no date found in %s", htmlLine)
-	}
-	date = strings.TrimSpace(date)
-
-	linksRegExp := regexp.MustCompile(`<a href="([^"]+)">([^<]+)</a>`)
-	links := linksRegExp.FindAllStringSubmatch(htmlLine, -1)
-	if len(date) < 1 {
-		return nil, fmt.Errorf("no date found in %s", links)
-	}
-
-	var orders []order.Order
-	for _, link := range links {
-		filename := strings.Split(link[1], "/")[len(strings.Split(link[1], "/"))-1]
-		orders = append(orders, order.Order{
-			Date:     date,
-			Filename: filename,
-			Link:     link[1],
-			Number:   link[2],
-		})
-	}
-
-	return orders, nil
-}
-
-func (d *Downloader) DownloadFile(fileName, url string) error {
+// TODO replace to pkg/downloader/downloader.go
+func (d *SiteParser) DownloadFile(fileName, url string) error {
 	// Create the directory if it does not exist
 	if _, err := os.Stat(d.path); os.IsNotExist(err) {
 		err = os.MkdirAll(d.path, 0755)

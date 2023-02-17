@@ -1,24 +1,31 @@
 package app
 
 import (
-	"citizenship/internal/downloader"
+	//"citizenship/internal/downloader"
+	//	"citizenship/internal/order"
 	"citizenship/internal/order"
-	"citizenship/internal/parser"
+	"citizenship/internal/parser/pdfparser"
+	"citizenship/internal/parser/siteparser"
 )
 
-type expDownloader interface {
-	Download() []order.Order
+type expSiteParser interface {
+	Parse(url string) *order.Orders
 }
 
-type expParser interface {
+type expFileDownloader interface {
+	Download(url string) error
+}
+
+type expPDFParser interface {
 	Parse(pdf string)
 }
 
 type App struct {
 	//	logger Logger
 	//	ctx    Context
-	downloader expDownloader
-	parser     expParser
+	siteParser expSiteParser
+	//	fileDownloader expFileDownloader
+	pdfParser expPDFParser
 }
 
 // func NewApp(logger Logger, ctx Context) *app {
@@ -28,15 +35,19 @@ func NewApp() *App {
 		a.logger = logger
 		return a*/
 	a := new(App)
-	a.downloader = downloader.NewDownloader("http://cetatenie.just.ro/ordine-articolul-11/", "./downloads")
+	a.siteParser = siteparser.NewSiteParser("http://cetatenie.just.ro/ordine-articolul-11/", "./downloads")
+
+	// TODO file downloader
+	// a.fileDownloader = downloader.NewFileDownloader("./downloads")
 
 	//TODO
-	a.parser = parser.NewParser("", "")
+	a.pdfParser = pdfparser.NewParser("", "")
 
 	return a
 }
 
 func (a *App) Run() {
-	//	a.downloader.Download()
-	a.parser.Parse("")
+	a.siteParser.Parse("http://cetatenie.just.ro/ordine-articolul-11/")
+
+	a.pdfParser.Parse("")
 }
