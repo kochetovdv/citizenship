@@ -8,19 +8,16 @@ import (
 	"strings"
 
 	"github.com/ledongthuc/pdf"
-
 	//_ "github.com/jung-kurt/gofpdf" // or use "github.com/hhrutter/pdfcpu"
 )
 
 type PDFParser struct {
-	path    string
-	filePDF string
+	path string
 }
 
-func NewParser(path, filePDF string) *PDFParser {
+func NewParser(path string) *PDFParser {
 	p := new(PDFParser)
 	p.path = path
-	p.filePDF = filePDF
 	return p
 }
 
@@ -28,7 +25,7 @@ func NewParser(path, filePDF string) *PDFParser {
 func (p *PDFParser) Parse(fileName string) { //([]issue.Issue, error) {
 	// Open the PDF file
 	//TODO
-	file, pdfReader, err := pdf.Open("downloads/O-15-din-07.01.2022-NPE.pdf")
+	file, pdfReader, err := pdf.Open(p.path + "/" + "O-15-din-07.01.2022-NPE.pdf")
 	if err != nil {
 		//TODO
 		fmt.Println("error in file opening")
