@@ -31,6 +31,12 @@ func (o *Orders) Add(order *Order) {
 	o.Orders = append(o.Orders, order)
 }
 
+func (o *Orders) AddRange(orders ...*Order) {
+	for _, order := range orders {
+		o.Add(order)
+	}
+}
+
 // Prints the orders to the console
 func (o *Orders) Print() {
 	for i, order := range o.Orders {

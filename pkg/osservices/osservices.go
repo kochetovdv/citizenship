@@ -1,12 +1,39 @@
 package osservices
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 )
+
+// Check if the path already exists, Return true if it exists, false if it does not
+func CheckDir(path string) (bool, error) {
+	// Create the directory if it does not exist
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.MkdirAll(path, 0755)
+		if err != nil {
+			return false, fmt.Errorf("error with creating folder:%s", path)
+		}
+	}
+	return true, nil
+}
+
+func SaveToFile(path string, data []byte) error {
+	// Create the directory if it does not exist
+	file, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("error with creating file:%s", path)
+	}
+	defer file.Close()
+	_, err = file.Write(data)
+	if err != nil {
+		return fmt.Errorf("error with writing file:%s", path)
+	}
+	return nil
+}
 
 func DownloadFile(path, fileName, url string) error {
 	// Create the directory if it does not exist
