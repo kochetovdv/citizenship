@@ -3,47 +3,38 @@ package issue
 import "fmt"
 
 type Issues struct {
-	Issues []*Issue
+	issues map[string][]string
 }
 
 func NewIssues() *Issues {
 	return &Issues{
-		[]*Issue{},
+		make(map[string][]string),
 	}
 }
 
-func (i *Issues) Add(issue *Issue) {
-	i.Issues = append(i.Issues, issue)
+func (i *Issues) Add(filename string, issues []string) {
+	i.issues[filename] = issues
 }
 
 // Prints the issues to the console
 func (i *Issues) Print() {
-	for i, issue := range i.Issues {
-		fmt.Printf("%d. %s\n", i+1, issue)
+	for filename, issues := range i.issues {
+		for _, issue := range issues {
+			fmt.Printf("Filename:%s\tissue:%s\n", filename, issue)
+		}
 	}
 }
 
 // Prints statistics about the issues
 func (i *Issues) Statistics() {
-	total := len(i.Issues)
-	fmt.Printf("Total issues: %d\n", total)
+	totalIssues := 0
+	for _, issues := range i.issues {
+		totalIssues += len(issues)
+	}
+	fmt.Printf("Total issues: %d\n", totalIssues)
 }
 
 // Gets the number of issues
 func (i *Issues) Count() int {
-	return len(i.Issues)
-}
-
-type Issue struct {
-	Number string
-}
-
-func NewIssue(number string) *Issue {
-	return &Issue{
-		Number: number,
-	}
-}
-
-func (i *Issue) Print() {
-	fmt.Printf("Number: %s\n", i.Number)
+	return len(i.issues)
 }

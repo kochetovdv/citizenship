@@ -44,12 +44,11 @@ func (d *Downloader) Download(listOfOrders *order.Orders) (*order.Orders, error)
 		// Check if the file already exists in the path
 		filePath := filepath.Join(d.path, order.Filename)
 		if _, err := os.Stat(filePath); !os.IsNotExist(err) {
-			log.Printf("File %s already exists\n", order.Filename)
-			ordersExist.Add(order)
+			//			log.Printf("File %s already exists\n", order.Filename)
+			ordersExist.Add(*order)
 			continue
-			//	return nil
 		}
-		ordersToDownload.Add(order)
+		ordersToDownload.Add(*order)
 	}
 
 	downloadedFiles := order.NewOrders()
@@ -67,17 +66,18 @@ func (d *Downloader) Download(listOfOrders *order.Orders) (*order.Orders, error)
 
 		// Create a new file and save the response body to it
 		log.Printf("Saving file %s\n", order.Filename)
-		osservices.SaveToFile(filePath, response)
+		err = osservices.SaveToFile(filePath, response)
 		if err != nil {
 			continue
 			//			return err
 		}
 		log.Printf("File %s downloaded to %s\n", order.Filename, filePath)
 		// If file is downloaded, add it to the list of downloaded files
-		downloadedFiles.Add(order)
+		downloadedFiles.Add(*order)
 	}
-	downloadedFiles.Statistics()
-	
-	ordersExist.AddRange(downloadedFiles.Orders...)
+
+	for _, order:=range downloadedFiles.Orders{
+		ordersExist.Add(*order)
+	}
 	return ordersExist, nil
 }

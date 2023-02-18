@@ -1,16 +1,10 @@
 package order
 
 import (
-	"citizenship/internal/issue"
 	"fmt"
-	_ "regexp"
-	_ "strconv"
-	_ "strings"
-
-	"github.com/google/uuid"
-	_ "github.com/pkg/errors"
 )
 
+// TODO make map[string]Order
 type Orders struct {
 	Orders []*Order
 }
@@ -23,16 +17,17 @@ func NewOrders() *Orders {
 }
 
 // Adds a new order to the list of orders
-func (o *Orders) Add(order *Order) {
-	for _, o1 := range o.Orders {
-		if o1.id == order.id {
+func (o *Orders) Add(order Order) {
+	for _, o := range o.Orders {
+		if o.Filename == order.Filename {
 			return
 		}
 	}
-	o.Orders = append(o.Orders, order)
+	o.Orders = append(o.Orders, &order)
 }
 
-func (o *Orders) AddRange(orders ...*Order) {
+// Adds a list of orders to the list of orders
+func (o *Orders) AddRange(orders ...Order) {
 	for _, order := range orders {
 		o.Add(order)
 	}
@@ -42,37 +37,22 @@ func (o *Orders) AddRange(orders ...*Order) {
 func (o *Orders) Statistics() {
 	totalOrders := len(o.Orders)
 	fmt.Printf("Total orders: %d\n", totalOrders)
-	totalIssues := 0
-	for _, order := range o.Orders {
-		totalIssues += order.Issues.Count()
-	}
-	fmt.Printf("Total issues: %d\n", totalIssues)
-
 }
 
-func (o *Orders) AddIssue(issue *issue.Issue) {
-
-}
-
+// TODO filename to key of map
 type Order struct {
-	id       string
 	Date     string
 	Filename string
 	Link     string
 	Number   string
-	Issues   issue.Issues
 }
 
 // Creates a new order
-func NewOrder(date string, filename string, link string, number string) *Order {
+func NewOrder(date string, filename string, link string, number string) Order {
 	o := new(Order)
-
-	id := uuid.New()
-	o.id = id.String()
-
 	o.Date = date
 	o.Filename = filename
 	o.Link = link
 	o.Number = number
-	return o
+	return *o
 }

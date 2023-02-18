@@ -4,6 +4,7 @@ import (
 	//"citizenship/internal/downloader"
 	//	"citizenship/internal/order"
 	"citizenship/internal/downloader"
+	"citizenship/internal/issue"
 	"citizenship/internal/order"
 	"citizenship/internal/parser/pdfparser"
 	"citizenship/internal/parser/siteparser"
@@ -19,7 +20,7 @@ type expFileDownloader interface {
 
 // TODO path, filename. Possible return data
 type expPDFParser interface {
-	Parse(orders *order.Orders) (*order.Orders, error)
+	Parse(orders *order.Orders) (issue.Issues, error)
 }
 
 type App struct {
@@ -48,9 +49,13 @@ func NewApp() *App {
 
 func (a *App) Run() {
 	parsedListOfOrders := a.siteParser.Parse("http://cetatenie.just.ro/ordine-articolul-11/")
+	parsedListOfOrders.Statistics()
+
 	downloadedOrders, _ := a.fileDownloader.Download(parsedListOfOrders)
+	downloadedOrders.Statistics()
 
 	parsedOrders, _ := a.pdfParser.Parse(downloadedOrders)
-
 	parsedOrders.Statistics()
+
+	//	parsedOrders.Print()
 }

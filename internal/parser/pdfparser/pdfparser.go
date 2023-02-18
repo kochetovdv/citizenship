@@ -24,11 +24,11 @@ func NewParser(path string) *PDFParser {
 }
 
 // Parse the pdf file and return the list of orders with the issues
-func (p *PDFParser) Parse(orders *order.Orders) (*order.Orders, error) {
+func (p *PDFParser) Parse(orders *order.Orders) (issue.Issues, error) {
+	issueList := issue.NewIssues()
 	for _, order := range orders.Orders {
 		// Open the PDF file
 		file, pdfReader, err := pdf.Open(p.path + "/" + order.Filename)
-
 		if err != nil {
 			fmt.Printf("error in openning file: %s\n", err)
 			file.Close()
@@ -39,8 +39,8 @@ func (p *PDFParser) Parse(orders *order.Orders) (*order.Orders, error) {
 		// Extract the text from the PDF
 		text, err := pdfReader.GetPlainText()
 		if err != nil {
-			file.Close()
 			fmt.Printf("error during text extracting from file %s\n", err)
+			file.Close()
 			continue
 		}
 
@@ -48,7 +48,7 @@ func (p *PDFParser) Parse(orders *order.Orders) (*order.Orders, error) {
 
 		// Split the text into lines
 		lines := strings.Split(string(data), "\n")
-		issues := issue.NewIssues()
+		var parsedIssues []string
 		for _, line := range lines {
 			// Extract the digits using a regular expression
 			re := regexp.MustCompile(`(\d+\/\d{4})`)
@@ -56,11 +56,9 @@ func (p *PDFParser) Parse(orders *order.Orders) (*order.Orders, error) {
 			if len(digits) == 0 {
 				continue
 			}
-			for _, digit := range digits {
-				issues.Add(&issue.Issue{Number: digit})
-			}
-			order.Issues = *issues
+			parsedIssues = append(parsedIssues, digits...)
 		}
+		issueList.Add(order.Filename, parsedIssues)
 	}
-	return orders, nil
+	return *issueList, nil
 }
