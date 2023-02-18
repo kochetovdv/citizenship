@@ -1,6 +1,8 @@
 package pdfparser
 
 import (
+	"citizenship/internal/issue"
+	"citizenship/internal/order"
 	"fmt"
 	"io/ioutil"
 	"regexp"
@@ -21,59 +23,44 @@ func NewParser(path string) *PDFParser {
 	return p
 }
 
-// TODO add error handling, change return data type to Orders.
-func (p *PDFParser) Parse(fileName string) { //([]issue.Issue, error) {
-	// Open the PDF file
-	//TODO
-	file, pdfReader, err := pdf.Open(p.path + "/" + "O-15-din-07.01.2022-NPE.pdf")
-	if err != nil {
-		//TODO
-		fmt.Println("error in file opening")
-		//	return nil, fmt.Errorf("error during open file %s", err)
-	}
-	defer file.Close()
+// Parse the pdf file and return the list of orders with the issues
+func (p *PDFParser) Parse(orders *order.Orders) (*order.Orders, error) {
+	for _, order := range orders.Orders {
+		// Open the PDF file
+		file, pdfReader, err := pdf.Open(p.path + "/" + order.Filename)
 
-	// Extract the text from the PDF
-	text, err := pdfReader.GetPlainText()
-	if err != nil {
-		fmt.Println("error in extracting plain text")
-		// TODO
-		//		return nil, fmt.Errorf("error during text extracting from file %s", err)
-	}
+		if err != nil {
+			fmt.Printf("error in openning file: %s\n", err)
+			file.Close()
+			continue
+		}
+		defer file.Close()
 
-	data, _ := ioutil.ReadAll(text)
+		// Extract the text from the PDF
+		text, err := pdfReader.GetPlainText()
+		if err != nil {
+			file.Close()
+			fmt.Printf("error during text extracting from file %s\n", err)
+			continue
+		}
 
-	// Split the text into lines
-	lines := strings.Split(string(data), "\n")
+		data, _ := ioutil.ReadAll(text)
 
-	// Create a slice to store the parsed DigitYear objects
-	//	var digitYears []issue.Issue
-
-	// Iterate over the lines and extract the digits and year
-	for _, line := range lines {
-		// Extract the digits using a regular expression
-		re := regexp.MustCompile(`(\d+\/\d{4})`)
-		digits := re.FindAllString(line, -1)
-		/*
-			// Extract the year using another regular expression
-			yearRe := regexp.MustCompile("year: [0-9]+")
-			yearStr := yearRe.FindString(line)
-			year, _ := strconv.Atoi(yearStr[6:])
-
-			if len(digits) == 0 || year == 0 {
+		// Split the text into lines
+		lines := strings.Split(string(data), "\n")
+		issues := issue.NewIssues()
+		for _, line := range lines {
+			// Extract the digits using a regular expression
+			re := regexp.MustCompile(`(\d+\/\d{4})`)
+			digits := re.FindAllString(line, -1)
+			if len(digits) == 0 {
 				continue
 			}
-
-			digit, _ := strconv.Atoi(digits[0])
-			digitYears = append(digitYears, issue.Issue{Number: digit, Year: year}) */
-		fmt.Println(digits)
+			for _, digit := range digits {
+				issues.Add(&issue.Issue{Number: digit})
+			}
+			order.Issues = *issues
+		}
 	}
-
-	//	fmt.Println(text)
-
-	/*	for _, line := range digitYears {
-		fmt.Println(line)
-	}*/
-
-	//	return nil, nil
+	return orders, nil
 }

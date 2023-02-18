@@ -19,7 +19,7 @@ type expFileDownloader interface {
 
 // TODO path, filename. Possible return data
 type expPDFParser interface {
-	Parse(filePDF string)
+	Parse(orders *order.Orders) (*order.Orders, error)
 }
 
 type App struct {
@@ -48,9 +48,9 @@ func NewApp() *App {
 
 func (a *App) Run() {
 	parsedListOfOrders := a.siteParser.Parse("http://cetatenie.just.ro/ordine-articolul-11/")
-	//TODO Add file downloader
-//	existedOrders, _ := a.fileDownloader.Download(parsedListOfOrders)
-	a.fileDownloader.Download(parsedListOfOrders)
+	downloadedOrders, _ := a.fileDownloader.Download(parsedListOfOrders)
 
-	a.pdfParser.Parse("")
+	parsedOrders, _ := a.pdfParser.Parse(downloadedOrders)
+
+	parsedOrders.Statistics()
 }

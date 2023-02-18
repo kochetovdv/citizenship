@@ -1,6 +1,7 @@
 package order
 
 import (
+	"citizenship/internal/issue"
 	"fmt"
 	_ "regexp"
 	_ "strconv"
@@ -37,18 +38,20 @@ func (o *Orders) AddRange(orders ...*Order) {
 	}
 }
 
-// Prints the orders to the console
-func (o *Orders) Print() {
-	for i, order := range o.Orders {
-		fmt.Printf("%d. %s\n", i+1, order)
-		//		fmt.Printf("%d. Date:%s\nFilename:%s\nLink:%s\nNumber:%s\n", i+1, order.Date, order.Filename, order.Link, order.Number)
-	}
-}
-
 // Prints statistics about the orders
 func (o *Orders) Statistics() {
-	total := len(o.Orders)
-	fmt.Printf("Total orders: %d\n", total)
+	totalOrders := len(o.Orders)
+	fmt.Printf("Total orders: %d\n", totalOrders)
+	totalIssues := 0
+	for _, order := range o.Orders {
+		totalIssues += order.Issues.Count()
+	}
+	fmt.Printf("Total issues: %d\n", totalIssues)
+
+}
+
+func (o *Orders) AddIssue(issue *issue.Issue) {
+
 }
 
 type Order struct {
@@ -57,6 +60,7 @@ type Order struct {
 	Filename string
 	Link     string
 	Number   string
+	Issues   issue.Issues
 }
 
 // Creates a new order
@@ -71,9 +75,4 @@ func NewOrder(date string, filename string, link string, number string) *Order {
 	o.Link = link
 	o.Number = number
 	return o
-}
-
-// Prints the order to the console
-func (o *Order) Print() {
-	fmt.Printf("Date:%s\tFilename:%s\tLink:%s\tNumber:%s\t", o.Date, o.Filename, o.Link, o.Number)
 }

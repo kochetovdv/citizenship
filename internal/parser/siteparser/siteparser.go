@@ -31,9 +31,6 @@ func (s *SiteParser) Parse(url string) *order.Orders {
 
 	listOfOrders := s.extractData(response)
 
-	listOfOrders.Print()
-	listOfOrders.Statistics()
-
 	return listOfOrders
 }
 
