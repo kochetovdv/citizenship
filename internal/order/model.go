@@ -4,33 +4,25 @@ import (
 	"fmt"
 )
 
-// TODO make map[string]Order
 type Orders struct {
-	Orders []*Order
+	Orders map[string]Order
 }
 
 // Create a list of orders
 func NewOrders() *Orders {
 	return &Orders{
-		[]*Order{},
+		make(map[string]Order),
 	}
 }
 
 // Adds a new order to the list of orders
-func (o *Orders) Add(order Order) {
-	for _, o := range o.Orders {
-		if o.Filename == order.Filename {
-			return
-		}
-	}
-	o.Orders = append(o.Orders, &order)
+func (o *Orders) Add(filename string, order Order) {
+	o.Orders[filename] = order
 }
 
-// Adds a list of orders to the list of orders
-func (o *Orders) AddRange(orders ...Order) {
-	for _, order := range orders {
-		o.Add(order)
-	}
+// Delete an order from the list of orders
+func (o *Orders) Delete(filename string) {
+	delete(o.Orders, filename)
 }
 
 // Prints statistics about the orders
@@ -42,16 +34,14 @@ func (o *Orders) Statistics() {
 // TODO filename to key of map
 type Order struct {
 	Date     string
-	Filename string
 	Link     string
 	Number   string
 }
 
 // Creates a new order
-func NewOrder(date string, filename string, link string, number string) Order {
+func NewOrder(date string, link string, number string) Order {
 	o := new(Order)
 	o.Date = date
-	o.Filename = filename
 	o.Link = link
 	o.Number = number
 	return *o

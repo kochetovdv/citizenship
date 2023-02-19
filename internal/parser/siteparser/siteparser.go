@@ -27,6 +27,7 @@ func (s *SiteParser) Parse(url string) *order.Orders {
 	response, err := s.connect()
 	if err != nil {
 		log.Printf("Error with connecting: %s", err)
+		return nil
 	}
 
 	listOfOrders := s.extractData(response)
@@ -71,11 +72,10 @@ func (d *SiteParser) extractData(body []byte) *order.Orders {
 			filename := filepath.Base(link[1])
 			order := order.NewOrder(
 				date,
-				filename,
 				link[1],
 				link[2],
 			)
-			orders.Add(order)
+			orders.Add(filename, order)
 		}
 	}
 	return orders
