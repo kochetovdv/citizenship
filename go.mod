@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/ledongthuc/pdf v0.0.0-20220302134840-0c2507a12d80
-	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
 )
 
@@ -13,6 +12,7 @@ require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
@@ -24,7 +24,6 @@ require (
 )
 
 require (
-	github.com/google/uuid v1.3.0
 	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/net v0.6.0
 	golang.org/x/sys v0.5.0 // indirect
