@@ -26,7 +26,7 @@ func NewDownloader(path string) *Downloader {
 	return d
 }
 
-// TODO Error handling
+// TODO Error handling 
 // Download downloads a files from a url and returns list of downloaded files
 func (d *Downloader) Download(listOfOrders *order.Orders) (*order.Orders, error) {
 	// Create the directory if it does not exist
@@ -79,8 +79,7 @@ func (d *Downloader) Download(listOfOrders *order.Orders) (*order.Orders, error)
 	return ordersExist, nil
 }
 
-
-//TODO How to check that downloaded file is PDF and not just html response?
+// TODO How to check that downloaded file is PDF and not just html response?
 func (d *Downloader) download(filename string, order order.Order) error {
 	filePath := filepath.Join(d.path, filename)
 	// Download the file from the URL
@@ -108,3 +107,95 @@ func (d *Downloader) ckeckingFile(filename string) error {
 	}
 	return nil
 }
+
+
+/*
+package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    url := "https://example.com/file.txt"
+
+    req, err := http.NewRequest("HEAD", url, nil)
+    if err != nil {
+        fmt.Println("Error creating request:", err)
+        return
+    }
+
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        fmt.Println("Error sending request:", err)
+        return
+    }
+    defer resp.Body.Close()
+
+    if resp.StatusCode != http.StatusOK {
+        fmt.Println("Error getting metadata:", resp.Status)
+        return
+    }
+
+    fmt.Println("File name:", resp.Header.Get("Content-Disposition"))
+    fmt.Println("File size:", resp.Header.Get("Content-Length"))
+    fmt.Println("File type:", resp.Header.Get("Content-Type"))
+    fmt.Println("Created on:", resp.Header.Get("Last-Modified"))
+}
+*/
+
+
+// file detectioncontent type
+// https://www.tutorialspoint.com/how-to-detect-the-content-type-of-a-file-in-golang
+// output: Content Type: application/pdf
+/*
+package main
+
+import (
+   "fmt"
+   "net/http"
+   "os"
+)
+
+func main() {
+
+   // Open the file whose type you
+   // want to check
+   file, err := os.Open("sample.pdf")
+
+   if err != nil {
+      panic(err)
+   }
+
+   defer file.Close()
+
+   // Get the file content
+   contentType, err := GetFileContentType(file)
+
+   if err != nil {
+      panic(err)
+   }
+
+   fmt.Println("Content Type of file is: " + contentType)
+}
+
+func GetFileContentType(ouput *os.File) (string, error) {
+
+   // to sniff the content type only the first
+   // 512 bytes are used.
+
+   buf := make([]byte, 512)
+
+   _, err := ouput.Read(buf)
+
+   if err != nil {
+      return "", err
+   }
+
+   // the function that actually does the trick
+   contentType := http.DetectContentType(buf)
+
+      return contentType, nil
+}
+*/
