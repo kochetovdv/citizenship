@@ -1,0 +1,15 @@
+database:
+  host: localhost
+  port: 5432
+  user: dbuser
+  password: secret
+  dbname: mydb
+sitestoparse:
+  - name: Articolul 11
+    url: http://cetatenie.just.ro/ordine-articolul-11/
+    temppath: /tmp/articolul11
+    path: downloads/articolul11
+  - name: Articolul 8
+    url: http://cetatenie.just.ro/ordine-articolul-8/
+    temppath: /tmp/articolul8
+    path: downloads/articolul8

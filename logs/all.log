@@ -1,0 +1,7 @@
+time="2023-05-16T23:44:34+03:00" level=info msg="hello world!" func="main.go:22" file="main.main()"
+time="2023-05-16T23:48:10+03:00" level=info msg="config initializing" func="main.go:22" file="main.main()"
+time="2023-05-16T23:48:10+03:00" level=info msg="reading application config" func="config.go:37" file="citizenship/internal/config.GetConfig.func1()"
+time="2023-05-16T23:48:10+03:00" level=info msg="&{{localhost 5432 dbuser secret mydb} [{Articolul 11 http://cetatenie.just.ro/ordine-articolul-11/ /tmp/articolul11 downloads/articolul11} {Articolul 8 http://cetatenie.just.ro/ordine-articolul-8/ /tmp/articolul8 downloads/articolul8}]}" func="main.go:25" file="main.main()"
+time="2023-05-16T23:54:36+03:00" level=info msg="config initializing" func="main.go:18" file="main.main()"
+time="2023-05-16T23:54:36+03:00" level=info msg="reading application config" func="config.go:37" file="citizenship/internal/config.GetConfig.func1()"
+time="2023-05-16T23:54:36+03:00" level=info msg="&{{localhost 5432 dbuser secret mydb} [{Articolul 11 http://cetatenie.just.ro/ordine-articolul-11/ /tmp/articolul11 downloads/articolul11} {Articolul 8 http://cetatenie.just.ro/ordine-articolul-8/ /tmp/articolul8 downloads/articolul8}]}" func="main.go:21" file="main.main()"

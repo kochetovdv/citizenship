@@ -176,7 +176,11 @@ func CopyFile(srcPath string, destPath string) (FileInfo, error) {
 	return fileInfo, nil
 }
 
-// Переименование файла
+// RenameFile renames a file at the given path with the new name provided.
+//
+// path: the current path to the file.
+// newName: the new name of the file.
+// returns: the updated file information and an error (if any).
 func RenameFile(path string, newName string) (FileInfo, error) {
 	// Получаем информацию о файле
 	fileInfo, err := GetFileInfo(path)
@@ -200,7 +204,12 @@ func RenameFile(path string, newName string) (FileInfo, error) {
 	return fileInfo, nil
 }
 
-// Перемещение файла
+// MoveFile moves a file from the source path to the destination path and returns
+// the updated file info or an error if an error occurs.
+//
+// srcPath: the path of the file to be moved.
+// destPath: the path where the file will be moved.
+// returns: the updated file info and an error if any. 
 func MoveFile(srcPath string, destPath string) (FileInfo, error) {
 	// Получаем информацию о файле
 	fileInfo, err := GetFileInfo(srcPath)

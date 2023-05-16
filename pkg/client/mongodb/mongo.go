@@ -1,4 +1,6 @@
-package mongo
+// ready
+
+package mongodb
 
 import (
 	"context"
